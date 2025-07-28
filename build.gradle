@@ -1,0 +1,113 @@
+plugins {
+	id 'application'
+	id 'java'
+}
+
+group   = 'seb_dot_hajek_at_gmail_dot_com.dots'
+version = '0.0'
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
+}
+
+application {
+	mainClass = 'seb_dot_hajek_at_gmail_dot_com.dots.installer.Main'
+}
+
+tasks.withType(JavaCompile) {
+	options.encoding = 'UTF-8'
+}
+
+// Create an executable JAR with all dependencies
+jar {
+	manifest {
+		attributes(
+			'Main-Class': application.mainClass,
+			'Implementation-Title': project.name,
+			'Implementation-Version': project.version
+		)
+	}
+	// Include all dependencies in the JAR (fat JAR)
+	from {
+		configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+	}
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+// Create a self-executable JAR with shebang
+task executableJar(type: Jar) {
+	dependsOn jar
+	archiveClassifier = 'executable'
+	
+	manifest {
+		attributes(
+			'Main-Class': application.mainClass,
+			'Implementation-Title': project.name,
+			'Implementation-Version': project.version
+		)
+	}
+	
+	from {
+		configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+	}
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+	
+	// Add shebang and make it executable
+	doLast {
+		def jarFile = archiveFile.get().asFile
+		def tempFile = new File(jarFile.parent, jarFile.name + '.tmp')
+		
+		// Write shebang and JAR content
+		tempFile.withOutputStream { out ->
+			out.write('#!/usr/bin/env java -jar\n'.bytes)
+			jarFile.withInputStream { inp ->
+				out << inp
+			}
+		}
+		
+		// Replace original with the shebang version
+		jarFile.delete()
+		tempFile.renameTo(jarFile)
+		
+		// Make it executable (Unix/Linux/macOS)
+		if (!System.getProperty('os.name').toLowerCase().contains('windows')) {
+			jarFile.setExecutable(true)
+		}
+		
+		println "Created executable JAR: ${jarFile.absolutePath}"
+		println "You can run it with: ./${jarFile.name}"
+	}
+}
+
+// Alternative: Create a shell script wrapper
+task createExecutableScript {
+	dependsOn jar
+	
+	def projectName = project.name
+	def jarFileName = jar.archiveFileName
+	def outputDir = jar.destinationDirectory
+	
+	doLast {
+		def jarFile = new File(outputDir.get().asFile, jarFileName.get())
+		def scriptFile = new File(jarFile.parent, projectName)
+		
+		scriptFile.text = """#!/bin/bash
+# Auto-generated executable script for ${projectName}
+exec java -jar "\$(dirname "\$0")/${jarFile.name}" "\$@"
+"""
+		
+		if (!System.getProperty('os.name').toLowerCase().contains('windows')) {
+			scriptFile.setExecutable(true)
+		}
+		
+		println "Created executable script: ${scriptFile.absolutePath}"
+		println "You can run it with: ./${scriptFile.name}"
+	}
+}
+
+// Build both executable versions
+task buildExecutables {
+	dependsOn executableJar, createExecutableScript
+	description = 'Creates both executable JAR with shebang and shell script wrapper'
+}
