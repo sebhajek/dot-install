@@ -54,11 +54,9 @@ public final class Command {
 
 		public CommandBuilderArgsStage
 		flag(final String flag, final String value) {
-			final String argToAdd = String.format(
+			args.add(String.format(
 			  "%s%s=%s", flag.length() > 1 ? "--" : "-", flag, value
-			);
-			args.add(argToAdd);
-			args.add(value);
+			));
 			return this;
 		}
 
@@ -76,10 +74,18 @@ public final class Command {
 			return this.arg(List.of(values));
 		}
 
+		public CommandBuilderArgsStage
+		flagWithSpace(final String flag, final String value) {
+			args.add(String.format(
+			  "%s%s %s", flag.length() > 1 ? "--" : "-", flag, value
+			));
+			return this;
+		}
+
 		public CommandBuilderArgsStage flag(final String flag) {
-			final String argToAdd =
-			  String.format("%s%s", flag.length() > 1 ? "--" : "-", flag);
-			args.add(argToAdd);
+			args.add(
+			  String.format("%s%s", flag.length() > 1 ? "--" : "-", flag)
+			);
 			return this;
 		}
 
