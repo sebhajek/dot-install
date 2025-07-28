@@ -7,7 +7,7 @@ public record Config(boolean dryRun, String colorschemeName) {
 
 	public static class Builder {
 		private String  colorschemeName = null;
-		private boolean dryRun          = true;
+		private boolean dryRun          = false;
 
 		Builder() {}
 
@@ -17,7 +17,7 @@ public record Config(boolean dryRun, String colorschemeName) {
 		}
 
 		public Config.Builder colorschemeName(String colorschemeName) {
-			this.dryRun = dryRun;
+			this.colorschemeName = colorschemeName;
 			return this;
 		}
 
