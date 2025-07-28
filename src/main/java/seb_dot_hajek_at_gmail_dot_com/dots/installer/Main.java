@@ -1,8 +1,9 @@
 package seb_dot_hajek_at_gmail_dot_com.dots.installer;
 
-final class Main {
+import seb_dot_hajek_at_gmail_dot_com.dots.installer.config.CLI;
 
-	public static void main(final String[] args) {
-		System.out.println("Hello world");
+public class Main {
+	public static void main(String[] args) {
+		var cfg = new CLI(args).process();
 	}
 }
