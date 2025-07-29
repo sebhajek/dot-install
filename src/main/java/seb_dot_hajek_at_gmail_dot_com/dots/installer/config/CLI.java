@@ -3,12 +3,13 @@ package seb_dot_hajek_at_gmail_dot_com.dots.installer.config;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import seb_dot_hajek_at_gmail_dot_com.dots.installer.distro.DistroDetector;
 
 public record CLI(String[] args) {
 
 	public Config process() throws CLIException {
 		final var cfgb             = Config.builder();
-		final List<String> argList = Arrays.asList(args);
+		final List<String> argList = Arrays.asList(this.args);
 		for (int i = 0; i < argList.size(); i++) {
 			final String arg = argList.get(i);
 
@@ -31,7 +32,7 @@ public record CLI(String[] args) {
 				}
 			}
 		}
-		return cfgb.build();
+		return cfgb.distro(DistroDetector.detectDistro()).build();
 	}
 
 	private String getNextArg(
@@ -57,21 +58,23 @@ public record CLI(String[] args) {
 	  {	    "-h, --help",            "Show this help message"}
 	};
 
-	private static int PAD_WIDTH =
-	  Arrays.stream(OPTIONS).mapToInt(opt -> opt[0].length()).max().orElse(0);
+	private static int PAD_WIDTH = Arrays.stream(CLI.OPTIONS)
+	                                 .mapToInt(opt -> opt[0].length())
+	                                 .max()
+	                                 .orElse(0);
 
 	public static String HELP = String.join(
 	  "\n",
 	  new String[] {
 	    "Usage: dots [options]",
 	    "Options:",
-	    Arrays.stream(OPTIONS)
+	    Arrays.stream(CLI.OPTIONS)
 	      .map(
 	        opt
 	        -> String.format(
 	          "\t%s%s\t%s",
 	          opt[0],
-	          " ".repeat(Math.max(1, PAD_WIDTH - opt[0].length())),
+	          " ".repeat(Math.max(1, CLI.PAD_WIDTH - opt[0].length())),
 	          opt[1]
 	        )
 	      )
