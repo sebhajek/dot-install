@@ -39,18 +39,6 @@ public record Theme(
 		public InvalidThemeException(final String message) { super(message); }
 	}
 
-	public boolean isLight() {
-		return background.luminance() > foreground.luminance();
-	}
-
-	public static String csvHeader() {
-		final List<String> headers = new ArrayList<>(
-		  List.of("name", "fg", "bg", "hl-fg", "hl-bg", "cur-fg", "cur-bg")
-		);
-		IntStream.range(0, 16).forEach(i -> headers.add("ansi-" + i));
-		return "#" + String.join(",", headers);
-	}
-
 	public String toCSV() {
 		final List<String> parts = new ArrayList<>(List.of(
 		  schemeName,
@@ -66,6 +54,62 @@ public record Theme(
 			parts.add(color != null ? color.toHex() : "000000");
 		}
 		return String.join(",", parts);
+	}
+
+	static Theme fromCSV(final String csvLine) {
+		final String[] parts = csvLine.split(",");
+
+		if (parts.length < 23) {
+			throw new InvalidThemeException(
+			  "Invalid CSV line: not enough columns"
+			);
+		}
+
+		for (int i = 0; i < parts.length; i++) {
+			parts[i] = parts[i].trim();
+			if (parts[i].startsWith("\"") && parts[i].endsWith("\"")) {
+				parts[i] = parts[i].substring(1, parts[i].length() - 1);
+			}
+		}
+
+		final String name                = parts[0];
+		final RGB    foreground          = RGB.fromHex(parts[1]);
+		final RGB    background          = RGB.fromHex(parts[2]);
+		final RGB    highlightForeground = RGB.fromHex(parts[3]);
+		final RGB    highlightBackground = RGB.fromHex(parts[4]);
+		final RGB    cursorForeground    = RGB.fromHex(parts[5]);
+		final RGB    cursorBackground    = RGB.fromHex(parts[6]);
+
+		final Map<Short, RGB> ansiColors = new HashMap<>();
+		for (short i = 0; i < 16; i++) {
+			final String colorHex = parts[7 + i];
+			if (!colorHex.equals("000000") || i == 0) {
+				ansiColors.put(i, RGB.fromHex(colorHex));
+			}
+		}
+
+		return new Theme(
+		  name,
+		  foreground,
+		  background,
+		  highlightForeground,
+		  highlightBackground,
+		  cursorForeground,
+		  cursorBackground,
+		  ansiColors
+		);
+	}
+
+	public boolean isLight() {
+		return background.luminance() > foreground.luminance();
+	}
+
+	public static String csvHeader() {
+		final List<String> headers = new ArrayList<>(
+		  List.of("name", "fg", "bg", "hl-fg", "hl-bg", "cur-fg", "cur-bg")
+		);
+		IntStream.range(0, 16).forEach(i -> headers.add("ansi-" + i));
+		return "#" + String.join(",", headers);
 	}
 
 	public Theme normalize() {

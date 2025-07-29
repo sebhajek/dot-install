@@ -3,6 +3,8 @@ package seb_dot_hajek_at_gmail_dot_com.dots.installer.config;
 import java.util.StringJoiner;
 import seb_dot_hajek_at_gmail_dot_com.dots.installer.distro.distros.AbstractDistro;
 import seb_dot_hajek_at_gmail_dot_com.dots.shared.Logger;
+import seb_dot_hajek_at_gmail_dot_com.dots.shared.colors.Theme;
+import seb_dot_hajek_at_gmail_dot_com.dots.shared.colors.ThemeLoader;
 
 public record
 Config(boolean dryRun, String colorschemeName, AbstractDistro distro) {
@@ -47,5 +49,9 @@ Config(boolean dryRun, String colorschemeName, AbstractDistro distro) {
 		  .add(String.format("colorscheme: %s", colorschemeName))
 		  .add(String.format("distro: %s", distro.getFormattedName()))
 		  .toString();
+	}
+
+	public Theme getTheme() {
+		return ThemeLoader.loader().getTheme(colorschemeName());
 	}
 }
