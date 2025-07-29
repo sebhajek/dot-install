@@ -1,13 +1,18 @@
 package seb_dot_hajek_at_gmail_dot_com.dots.shared;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Collections;
 import java.util.stream.Stream;
+import seb_dot_hajek_at_gmail_dot_com.dots.installer.config.ConfigManager;
 
 public class FileUtils {
 
@@ -51,7 +56,7 @@ public class FileUtils {
 	) throws IOException, URISyntaxException {
 
 		Logger.logger().info(
-		  String.format("opening up recourse @ %s ", resourcePath)
+		  String.format("opening up resource @ %s ", resourcePath)
 		);
 		URL resourceUrl =
 		  FileUtils.class.getClassLoader().getResource(resourcePath);
@@ -60,8 +65,6 @@ public class FileUtils {
 			  "Resource directory not found: " + resourcePath
 			);
 		}
-
-		Path sourceDir = Paths.get(resourceUrl.toURI());
 
 		if (createTargetDir) {
 			Logger.logger().info(String.format(
@@ -74,7 +77,87 @@ public class FileUtils {
 			);
 		}
 
-		copyDirectoryRecursively(sourceDir, targetPath);
+		URI resourceUri = resourceUrl.toURI();
+
+		if (resourceUri.getScheme().equals("jar")) {
+			copyFromJarResource(resourceUri, targetPath);
+		} else {
+			Path sourceDir = Paths.get(resourceUri);
+			copyDirectoryRecursively(sourceDir, targetPath);
+		}
+	}
+
+	/**
+	 * Copies resources from inside a JAR file.
+	 *
+	 * @param jarUri the JAR URI of the resource
+	 * @param targetPath the target directory path
+	 * @throws IOException if file operations fail
+	 */
+	private static void copyFromJarResource(URI jarUri, Path targetPath)
+	  throws IOException {
+		try (
+		  FileSystem jarFs =
+		    FileSystems.newFileSystem(jarUri, Collections.emptyMap())
+		) {
+			// Extract the path within the JAR
+			String jarPath      = jarUri.toString();
+			String resourcePath = jarPath.substring(jarPath.indexOf("!") + 1);
+			Path   sourceDir    = jarFs.getPath(resourcePath);
+
+			copyJarDirectoryRecursively(sourceDir, targetPath);
+		}
+	}
+
+	/**
+	 * Recursively copies all files and subdirectories from a JAR source to a
+	 * regular file system target. This method handles the path resolution
+	 * between different file systems.
+	 *
+	 * @param source the source directory (from JAR file system)
+	 * @param target the target directory (regular file system)
+	 * @throws IOException if file operations fail
+	 */
+	private static void copyJarDirectoryRecursively(Path source, Path target)
+	  throws IOException {
+		try (Stream<Path> paths = Files.walk(source)) {
+			paths.forEach(sourcePath -> {
+				try {
+					// Convert the relative path to a string to avoid file
+					// system provider mismatch
+					Path   relativePath    = source.relativize(sourcePath);
+					String relativePathStr = relativePath.toString();
+
+					// Resolve the target path using string concatenation to
+					// avoid provider mismatch
+					Path targetPath = target.resolve(relativePathStr);
+
+					if (Files.isDirectory(sourcePath)) {
+						Files.createDirectories(targetPath);
+					} else {
+						var log = String.format(
+						  "copying: %s -> %s",
+						  sourcePath.toString(),
+						  targetPath.toString()
+						);
+						if (!ConfigManager.cfg().getConfig().dryRun()) {
+							Logger.logger().info(log);
+							Files.copy(
+							  sourcePath,
+							  targetPath,
+							  StandardCopyOption.REPLACE_EXISTING
+							);
+						} else {
+							Logger.logger().dryRun(log);
+						}
+					}
+				} catch (IOException e) {
+					throw new RuntimeException(
+					  "Failed to copy: " + sourcePath, e
+					);
+				}
+			});
+		}
 	}
 
 	/**
@@ -141,16 +224,22 @@ public class FileUtils {
 					if (Files.isDirectory(sourcePath)) {
 						Files.createDirectories(targetPath);
 					} else {
-						Logger.logger().info(String.format(
+						var log = String.format(
 						  "copying: %s -> %s",
 						  sourcePath.toString(),
 						  targetPath.toString()
-						));
-						Files.copy(
-						  sourcePath,
-						  targetPath,
-						  StandardCopyOption.REPLACE_EXISTING
 						);
+						if (!ConfigManager.cfg().getConfig().dryRun()) {
+
+							Logger.logger().info(log);
+							Files.copy(
+							  sourcePath,
+							  targetPath,
+							  StandardCopyOption.REPLACE_EXISTING
+							);
+						} else {
+							Logger.logger().dryRun(log);
+						}
 					}
 				} catch (IOException e) {
 					throw new RuntimeException(
