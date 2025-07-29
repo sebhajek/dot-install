@@ -5,6 +5,18 @@ import seb_dot_hajek_at_gmail_dot_com.dots.installer.distro.package_manager.Abst
 
 public interface AbstractModule {
 
+	public static class PackageNotFoundException
+	  extends UnsupportedOperationException {
+
+		public static PackageNotFoundException defaultMsg() {
+			return new PackageNotFoundException("package not found");
+		}
+
+		public PackageNotFoundException(final String message) {
+			super(message);
+		}
+	}
+
 	public List<RepoPM> getRepos();
 
 	public List<String> getPackages();

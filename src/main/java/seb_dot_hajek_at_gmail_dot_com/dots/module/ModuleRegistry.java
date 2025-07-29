@@ -6,21 +6,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class ModuleRegistry {
+public final class ModuleRegistry {
 	private static ModuleRegistry instance;
-	private final Map<Class<? extends AbstractModule>, AbstractModule>
-	              moduleInstances;
-
-	private ModuleRegistry() { this.moduleInstances = new HashMap<>(); }
 
 	public static synchronized ModuleRegistry getInstance() {
 		if (instance == null) { instance = new ModuleRegistry(); }
 		return instance;
 	}
 
+	private final Map<Class<? extends AbstractModule>, AbstractModule>
+	              moduleInstances;
+
+	private ModuleRegistry() { this.moduleInstances = new HashMap<>(); }
+
 	public synchronized void registerModule(
-	  Class<? extends AbstractModule> moduleClass,
-	  AbstractModule                  instance
+	  final Class<? extends AbstractModule> moduleClass,
+	  final AbstractModule                  instance
 	) {
 		if (moduleInstances.containsKey(moduleClass)) {
 			throw new IllegalStateException(
@@ -32,13 +33,13 @@ class ModuleRegistry {
 
 	@SuppressWarnings("unchecked")
 	public synchronized<T extends AbstractModule> T
-	getModule(Class<T> moduleClass) {
+	getModule(final Class<T> moduleClass) {
 		T instance = (T) moduleInstances.get(moduleClass);
 		if (instance == null) {
 			try {
 				instance = moduleClass.getDeclaredConstructor().newInstance();
 				moduleInstances.put(moduleClass, instance);
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				throw new RuntimeException(
 				  "Failed to create singleton instance of "
 				    + moduleClass.getSimpleName(),
@@ -50,12 +51,12 @@ class ModuleRegistry {
 	}
 
 	public List<AbstractModule> resolveDependencies(
-	  List<Class<? extends AbstractModule>> dependencyTypes
+	  final List<Class<? extends AbstractModule>> dependencyTypes
 	) {
 		if (dependencyTypes == null) { return new ArrayList<>(); }
 
-		List<AbstractModule> dependencies = new ArrayList<>();
-		for (Class<? extends AbstractModule> depType : dependencyTypes) {
+		final List<AbstractModule> dependencies = new ArrayList<>();
+		for (final Class<? extends AbstractModule> depType : dependencyTypes) {
 			dependencies.add(getModule(depType));
 		}
 		return dependencies;

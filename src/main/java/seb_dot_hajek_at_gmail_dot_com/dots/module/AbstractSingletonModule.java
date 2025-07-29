@@ -13,13 +13,13 @@ public abstract class AbstractSingletonModule implements AbstractModule {
 
 	@SafeVarargs
 	protected final List<Class<? extends AbstractModule>> dependencies(
-	  Class<? extends AbstractModule>... deps
+	  final Class<? extends AbstractModule>... deps
 	) {
 		return Arrays.asList(deps);
 	}
 
 	protected <T extends AbstractModule> T
-	getDependency(Class<T> dependencyClass) {
+	getDependency(final Class<T> dependencyClass) {
 		return ModuleRegistry.getInstance().getModule(dependencyClass);
 	}
 }
