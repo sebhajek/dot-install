@@ -1,0 +1,3 @@
+config-file = config.d/color
+config-file = config.d/config
+config-file = config.d/keybinds
