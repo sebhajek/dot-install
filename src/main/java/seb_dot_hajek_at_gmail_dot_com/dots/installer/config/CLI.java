@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import seb_dot_hajek_at_gmail_dot_com.dots.installer.distro.DistroDetector;
+import seb_dot_hajek_at_gmail_dot_com.dots.shared.colors.ThemeLoader;
 
 public record CLI(String[] args) {
 
@@ -20,8 +21,9 @@ public record CLI(String[] args) {
 					  getNextArg(argList, ++i, "--theme requires a value");
 					cfgb.colorschemeName(theme);
 				}
-				case "-h", "--help" -> showHelpAndExit();
-				default ->               {
+				case "--list-themes" -> showAllThemesAndExit();
+				case "-h", "--help" ->  showHelpAndExit();
+				default ->                {
 					if (arg.startsWith("--theme=")) {
 						cfgb.colorschemeName(
 						  arg.substring("--theme=".length())
@@ -42,6 +44,16 @@ public record CLI(String[] args) {
 		throw new CLIException("Error: " + errorMessage);
 	}
 
+	private void showAllThemesAndExit() {
+		ThemeLoader.loader()
+		  .getAllThemes()
+		  .stream()
+		  .map((theme) -> { return theme.schemeName(); })
+		  .sorted()
+		  .forEachOrdered((theme) -> { System.out.println(theme); });
+		System.exit(0);
+	}
+
 	private void showHelpAndExit() {
 		System.err.println(HELP);
 		System.exit(0);
@@ -55,6 +67,7 @@ public record CLI(String[] args) {
 	private static String[][] OPTIONS = {
 	  {     "-d, --dry-run", "Run in dry mode (no changes made)"},
 	  {"-t, --theme <name>",    "Set the colorscheme/theme name"},
+	  {     "--list-themes",    "List all available theme names"},
 	  {	    "-h, --help",            "Show this help message"}
 	};
 

@@ -73,7 +73,8 @@ public class ThemeLoader {
 			while ((line = reader.readLine()) != null) {
 				line = line.trim();
 
-				if (line.isEmpty() || (isFirstLine && line.startsWith("#"))) {
+				if (line.isEmpty() || (isFirstLine && line.startsWith("#"))
+				    || (isFirstLine && line.startsWith("\"#"))) {
 					isFirstLine = false;
 					continue;
 				}

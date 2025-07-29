@@ -8,11 +8,15 @@ import seb_dot_hajek_at_gmail_dot_com.dots.module.ModuleLoader;
 import seb_dot_hajek_at_gmail_dot_com.dots.module.modules.GhosttyModule;
 import seb_dot_hajek_at_gmail_dot_com.dots.module.modules.GitModule;
 import seb_dot_hajek_at_gmail_dot_com.dots.module.modules.NvimModule;
+import seb_dot_hajek_at_gmail_dot_com.dots.shared.Logger;
 
 public class Main {
 	public static void main(String[] args)
 	  throws IOException, InterruptedException, CyclicDependencyException {
 		ConfigManager.cfg().setConfig(new CLI(args).process());
+		Logger.logger().info(
+		  ConfigManager.cfg().getConfig().getTheme().toString()
+		);
 		ModuleLoader loader = new ModuleLoader(
 		  GhosttyModule.class, NvimModule.class, GitModule.class
 		);
