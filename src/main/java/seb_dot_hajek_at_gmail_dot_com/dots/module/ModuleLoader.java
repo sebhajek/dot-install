@@ -9,48 +9,100 @@ import seb_dot_hajek_at_gmail_dot_com.dots.installer.distro.package_manager.Abst
 import seb_dot_hajek_at_gmail_dot_com.dots.module.DependencyGraph.CyclicDependencyException;
 import seb_dot_hajek_at_gmail_dot_com.dots.shared.Logger;
 
-public class ModuleLoader {
+public final class ModuleLoader {
 	private final ModuleRegistry  registry;
 	private final DependencyGraph dependencyGraph;
 
 	@SafeVarargs
-	public ModuleLoader(Class<? extends AbstractModule>... moduleClasses) {
+	public ModuleLoader(
+	  final Class<? extends AbstractModule>... moduleClasses
+	) {
 		this.registry = ModuleRegistry.getInstance();
 
-		List<AbstractModule> modules = new ArrayList<>();
-		for (Class<? extends AbstractModule> moduleClass : moduleClasses) {
-			AbstractModule module = registry.getModule(moduleClass);
+		final List<AbstractModule> modules = new ArrayList<>();
+		for (final Class<? extends AbstractModule> moduleClass :
+		     moduleClasses) {
+			final AbstractModule module = registry.getModule(moduleClass);
 			modules.add(module);
 		}
 
 		this.dependencyGraph = DependencyGraph.fromModules(modules);
 	}
 
-	public ModuleLoader(List<Class<? extends AbstractModule>> moduleClasses) {
+	public ModuleLoader(
+	  final List<Class<? extends AbstractModule>> moduleClasses
+	) {
 		this.registry = ModuleRegistry.getInstance();
 
-		List<AbstractModule> modules = new ArrayList<>();
-		for (Class<? extends AbstractModule> moduleClass : moduleClasses) {
-			AbstractModule module = registry.getModule(moduleClass);
+		final List<AbstractModule> modules = new ArrayList<>();
+		for (final Class<? extends AbstractModule> moduleClass :
+		     moduleClasses) {
+			final AbstractModule module = registry.getModule(moduleClass);
 			modules.add(module);
 		}
 
 		this.dependencyGraph = DependencyGraph.fromModules(modules);
 	}
 
-	public ModuleLoader(AbstractModule... modules) {
+	public ModuleLoader(final AbstractModule... modules) {
 		this.registry = ModuleRegistry.getInstance();
 
-		for (AbstractModule module : modules) {
+		for (final AbstractModule module : modules) {
 			registry.registerModule(module.getClass(), module);
 		}
 
 		this.dependencyGraph = DependencyGraph.fromModules(List.of(modules));
 	}
 
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
+		return true;
+	}
+
 	public List<AbstractModule> getInstallationOrder()
 	  throws DependencyGraph.CyclicDependencyException {
 		return dependencyGraph.getInstallationOrder();
+	}
+
+	public void installAll() throws DependencyGraph.CyclicDependencyException {
+		Logger.logger().info(String.format(
+		  "dependencies: %s", this.getDependencyGraph().toString()
+		));
+		final var pm =
+		  ConfigManager.cfg().getConfig().distro().getPackageManager();
+		getReposInOrder().forEach((repo) -> {
+			try {
+				Logger.logger().info(
+				  String.format("Installing repo %s ...", repo)
+				);
+				pm.addRepo(repo);
+			} catch (final IOException e) {
+				e.printStackTrace();
+			} catch (final InterruptedException e) { e.printStackTrace(); }
+		});
+		try {
+			pm.install(getPackagesInOrder().toArray(String[] ::new));
+		} catch (final IOException e) {
+			e.printStackTrace();
+		} catch (final InterruptedException e) { e.printStackTrace(); }
+	}
+
+	public DependencyGraph getDependencyGraph() { return dependencyGraph; }
+
+	public Collection<AbstractModule> getModules() {
+		return registry.getAllModules();
+	}
+
+	public <T extends AbstractModule> T getModule(final Class<T> moduleClass) {
+		return registry.getModule(moduleClass);
 	}
 
 	private List<RepoPM> getReposInOrder() throws CyclicDependencyException {
@@ -75,38 +127,5 @@ public class ModuleLoader {
 		  })
 		  .flatMap((module) -> { return module.getPackages().stream(); })
 		  .toList();
-	}
-
-	public void installAll() throws DependencyGraph.CyclicDependencyException {
-		Logger.logger().info(String.format(
-		  "dependencies: %s", this.getDependencyGraph().toString()
-		));
-		final var pm =
-		  ConfigManager.cfg().getConfig().distro().getPackageManager();
-		getReposInOrder().forEach((repo) -> {
-			try {
-				Logger.logger().info(
-				  String.format("Installing repo %s ...", repo)
-				);
-				pm.addRepo(repo);
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (InterruptedException e) { e.printStackTrace(); }
-		});
-		try {
-			pm.install(getPackagesInOrder().toArray(String[] ::new));
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) { e.printStackTrace(); }
-	}
-
-	public DependencyGraph getDependencyGraph() { return dependencyGraph; }
-
-	public Collection<AbstractModule> getModules() {
-		return registry.getAllModules();
-	}
-
-	public <T extends AbstractModule> T getModule(Class<T> moduleClass) {
-		return registry.getModule(moduleClass);
 	}
 }
