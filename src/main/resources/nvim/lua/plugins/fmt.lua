@@ -24,7 +24,7 @@ return {
 					return nil
 				else
 					return {
-						timeout_ms = 1000,
+						timeout_ms = 5000,
 						lsp_format = "fallback",
 					}
 				end
@@ -79,12 +79,7 @@ return {
 				haskell = { "fourmolu" },
 				sql = { "custom-sql-formatter" },
 				kotlin = { "ktlint" },
-				java = {
-					"java-clang-format",
-					"basic-java-clang-format",
-					"clang-format",
-					stop_after_first = true,
-				},
+				java = { "google-java-format", "java-clang-format" },
 				php = { "pretty-php", "php_cs_fixer" },
 				twig = { "djlint", "twig_cs_fixer" },
 				nix = { "nixpkgs_fmt" },

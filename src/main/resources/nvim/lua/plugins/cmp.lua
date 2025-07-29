@@ -1,8 +1,7 @@
 return {
 	{
-		"saghen/blink.cmp",
-		event = "VimEnter",
-		version = "1.*",
+		"hrsh7th/nvim-cmp",
+		event = "InsertEnter",
 		dependencies = {
 			{
 				"L3MON4D3/LuaSnip",
@@ -24,46 +23,85 @@ return {
 						end,
 					},
 				},
-				opts = {},
 			},
+			"saadparwaiz1/cmp_luasnip",
+			"hrsh7th/cmp-nvim-lsp",
+			"hrsh7th/cmp-path",
+			"hrsh7th/cmp-buffer",
 			"folke/lazydev.nvim",
 		},
-		--- @module 'blink.cmp'
-		--- @type blink.cmp.Config
-		opts = {
-			keymap = {
-				-- 'default' (recommended) for mappings similar to built-in completions
-				-- <tab>/<s-tab>: move to right/left of your snippet expansion
-				-- <c-space>: Open menu or open docs if already open
-				-- <c-n>/<c-p> or <up>/<down>: Select next/previous item
-				-- <c-e>: Hide menu
-				-- <c-k>: Toggle signature help
-				-- read `:help ins-completion`
-				--
-				-- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
-				--    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
-				preset = "enter",
-			},
-			appearance = {
-				nerd_font_variant = "mono",
-			},
-			completion = {
-				-- By default, you may press `<c-space>` to show the documentation.
-				documentation = { auto_show = true, auto_show_delay_ms = 500 },
-			},
-			sources = {
-				default = { "lsp", "path", "snippets", "lazydev" },
-				providers = {
-					lazydev = {
-						module = "lazydev.integrations.blink",
-						score_offset = 100,
-					},
+		config = function ()
+			local cmp = require("cmp")
+			local luasnip = require("luasnip")
+			luasnip.config.setup({})
+
+			cmp.setup({
+				snippet = {
+					expand = function (args)
+						luasnip.lsp_expand(args.body)
+					end,
 				},
-			},
-			snippets = { preset = "luasnip" },
-			fuzzy = { implementation = "lua" },
-			signature = { enabled = true },
-		},
+				completion = {
+					completeopt = "menu,menuone,noinsert",
+				},
+				mapping = cmp.mapping.preset.insert({
+					-- Select the [n]ext item
+					["<C-n>"] = cmp.mapping.select_next_item(),
+					-- Select the [p]revious item
+					["<C-p>"] = cmp.mapping.select_prev_item(),
+
+					-- Scroll the documentation window [b]ack / [f]orward
+					["<C-b>"] = cmp.mapping.scroll_docs(-4),
+					["<C-f>"] = cmp.mapping.scroll_docs(4),
+
+					-- Accept ([y]es) the completion.
+					["<C-y>"] = cmp.mapping.confirm({ select = true }),
+					["<CR>"] = cmp.mapping.confirm({ select = true }),
+
+					-- Manually trigger a completion from nvim-cmp.
+					["<C-Space>"] = cmp.mapping.complete({}),
+
+					-- Move through snippet placeholders
+					["<C-l>"] = cmp.mapping(function ()
+						if luasnip.expand_or_locally_jumpable() then
+							luasnip.expand_or_jump()
+						end
+					end, { "i", "s" }),
+					["<C-h>"] = cmp.mapping(function ()
+						if luasnip.locally_jumpable(-1) then
+							luasnip.jump(-1)
+						end
+					end, { "i", "s" }),
+				}),
+				sources = {
+					{
+						name = "lazydev",
+						group_index = 0, -- set group index to 0 to skip loading LuaLS completions
+					},
+					{ name = "nvim_lsp" },
+					{ name = "luasnip" },
+					{ name = "path" },
+					{ name = "buffer" },
+				},
+				window = {
+					completion = cmp.config.window.bordered(),
+					documentation = cmp.config.window.bordered(),
+				},
+				formatting = {
+					format = function (entry, vim_item)
+						-- Add source name
+						vim_item.menu = ({
+							nvim_lsp = "[LSP]",
+							luasnip = "[LuaSnip]",
+							buffer = "[Buffer]",
+							path = "[Path]",
+							lazydev = "[LazyDev]",
+						})[entry.source.name]
+						return vim_item
+					end,
+				},
+			})
+		end,
 	},
 	{
 		"folke/todo-comments.nvim",

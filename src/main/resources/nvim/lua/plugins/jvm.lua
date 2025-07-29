@@ -12,7 +12,7 @@ return {
 			local jdtls_path = home .. "/.local/share/nvim/mason/packages/jdtls"
 			local path_to_jar = jdtls_path
 				.. "/plugins/org.eclipse.equinox.launcher_*.jar"
-			local path_to_config = jdtls_path .. "/config_linux" -- or config_mac/config_win
+			local path_to_config = jdtls_path .. "/config_linux"
 			local lombok_path = home .. "/.local/share/lombok/lombok.jar"
 
 			local config = {
@@ -51,7 +51,7 @@ return {
 				init_options = {
 					bundles = {},
 				},
-				capabilities = require("blink.cmp").get_lsp_capabilities(),
+				capabilities = require("cmp_nvim_lsp").default_capabilities(),
 				on_attach = on_attach,
 			}
 			require("jdtls").start_or_attach(config)
@@ -65,7 +65,7 @@ return {
 			local on_attach = require("utils.lsp").on_attach
 			local metals = require("metals")
 			local mcfg = metals.bare_config()
-			local capabilities = require("blink.cmp").get_lsp_capabilities()
+			local capabilities = require("cmp_nvim_lsp").default_capabilities()
 			mcfg.capabilities = capabilities
 			mcfg.init_options = {
 				statusBarProvider = "on",

@@ -43,6 +43,7 @@ end)
 -- }}}
 
 -- }}}
+
 -- [[ KEYMAPS ]] {{{
 
 -- [[ Leader Keys ]] {{{
@@ -85,11 +86,13 @@ vim.keymap.set("n", "<C-S-k>", "<C-w>K", { desc = "Move window up" })
 -- }}}
 
 -- }}}
+
 -- [[ COLORSCHEME ]] {{{
 vim.g.have_nerd_font = true
 vim.cmd.set("notermguicolors t_Co=16")
 vim.cmd.colorscheme("noctu")
 -- }}}
+
 -- [[ BASIC AUTOCOMMANDS ]] {{{
 vim.api.nvim_create_autocmd("TextYankPost", {
 	desc = "Highlight when yanking (copying) text",
@@ -102,6 +105,7 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 	end,
 })
 -- }}}
+
 -- [[ INSTALL LAZY.NVIM ]] {{{
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
@@ -119,10 +123,12 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 	end
 end
 -- }}}
+
 -- [[ UTILITY FUNCTIONS ]] {{{
 local rtp = vim.opt.rtp
 rtp:prepend(lazypath)
 -- }}}
+
 -- [[ PLUGIN LOADING ]] {{{
 require("lazy").setup({
 	spec = {

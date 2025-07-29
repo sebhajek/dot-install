@@ -13,13 +13,9 @@ return {
 		dependencies = {
 			{ "mason-org/mason.nvim", opts = {} },
 			{ "mason-org/mason-lspconfig.nvim" },
-			{
-				"WhoIsSethDaniel/mason-tool-installer.nvim",
-			},
+			{ "WhoIsSethDaniel/mason-tool-installer.nvim" },
 			{ "j-hui/fidget.nvim", opts = {} },
-			{
-				"saghen/blink.cmp",
-			},
+			{ "hrsh7th/nvim-cmp" },
 		},
 		config = function ()
 			local on_attach = require("utils.lsp").on_attach
@@ -63,7 +59,8 @@ return {
 				},
 			})
 
-			local capabilities = require("blink.cmp").get_lsp_capabilities()
+			-- Changed to use nvim-cmp capabilities
+			local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
 			local servers = {
 				cssls = {},
@@ -235,6 +232,7 @@ return {
 				"tex-fmt",
 				"xmlformatter",
 				"sql-formatter",
+				"google-java-format",
 			})
 			require("mason-tool-installer").setup({
 				ensure_installed = ensure_installed,
