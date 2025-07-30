@@ -47,6 +47,7 @@ public record CommandExec(Command cmd) {
 
             var stdOutput =
               CommandExec.readOutputStream(process.getInputStream());
+            Logger.logger().run(String.format("stdout:\n%s", stdOutput));
             if (exitCode != 0) {
                 var errorOutput =
                   CommandExec.readOutputStream(process.getErrorStream());
