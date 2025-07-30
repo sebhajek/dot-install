@@ -3,7 +3,8 @@
 PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
 
 if [ -d "$HOME/.z/env/" ]; then
-	for file in "$HOME/.z/env/"*; do
+	for file in "$HOME/.z/env"/.*; do
+		[[ "$file" == */. || "$file" == */.. ]] && continue
 		[ -f "$file" ] && . "$file"
 	done
 fi

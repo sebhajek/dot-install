@@ -12,6 +12,7 @@ import seb_dot_hajek_at_gmail_dot_com.dots.module.modules.NvimModule;
 import seb_dot_hajek_at_gmail_dot_com.dots.module.modules.TmuxModule;
 import seb_dot_hajek_at_gmail_dot_com.dots.module.modules.ZSHModule;
 import seb_dot_hajek_at_gmail_dot_com.dots.module.modules.compilers.GoModule;
+import seb_dot_hajek_at_gmail_dot_com.dots.module.modules.compilers.JVMModule;
 import seb_dot_hajek_at_gmail_dot_com.dots.shared.Logger;
 
 public class Main {
@@ -28,7 +29,8 @@ public class Main {
 		  ZSHModule.class,
 		  TmuxModule.class,
 		  CompilerModule.class,
-		  GoModule.class
+		  GoModule.class,
+		  JVMModule.class
 		);
 		loader.installAll();
 	}

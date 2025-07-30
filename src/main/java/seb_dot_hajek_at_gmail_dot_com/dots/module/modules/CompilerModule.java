@@ -8,6 +8,7 @@ import seb_dot_hajek_at_gmail_dot_com.dots.installer.distro.package_manager.Abst
 import seb_dot_hajek_at_gmail_dot_com.dots.module.AbstractModule;
 import seb_dot_hajek_at_gmail_dot_com.dots.module.AbstractSingletonModule;
 import seb_dot_hajek_at_gmail_dot_com.dots.module.modules.compilers.GoModule;
+import seb_dot_hajek_at_gmail_dot_com.dots.module.modules.compilers.JVMModule;
 import seb_dot_hajek_at_gmail_dot_com.dots.shared.FileUtils;
 import seb_dot_hajek_at_gmail_dot_com.dots.shared.Logger;
 
@@ -15,7 +16,7 @@ public class CompilerModule extends AbstractSingletonModule {
 
 	public static void CopyZSHEnv(Path pathToConfig)
 	  throws IOException, URISyntaxException {
-		FileUtils.copyResourceFile(
+		FileUtils.copyResourceFileIntoDirectory(
 		  ZSHModule.ZSH_ENV_RESOURCES.resolve(pathToConfig),
 		  ZSHModule.PATH_TO_ENV_FILES
 		);
@@ -38,6 +39,6 @@ public class CompilerModule extends AbstractSingletonModule {
 
 	@Override
 	public List<Class<? extends AbstractModule>> getDependencyTypes() {
-		return dependencies(ZSHModule.class, GoModule.class);
+		return dependencies(ZSHModule.class, GoModule.class, JVMModule.class);
 	}
 }
