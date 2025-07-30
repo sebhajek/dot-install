@@ -5,11 +5,14 @@ import seb_dot_hajek_at_gmail_dot_com.dots.installer.config.CLI;
 import seb_dot_hajek_at_gmail_dot_com.dots.installer.config.ConfigManager;
 import seb_dot_hajek_at_gmail_dot_com.dots.module.DependencyGraph.CyclicDependencyException;
 import seb_dot_hajek_at_gmail_dot_com.dots.module.ModuleLoader;
+import seb_dot_hajek_at_gmail_dot_com.dots.module.modules.CompilerModule;
 import seb_dot_hajek_at_gmail_dot_com.dots.module.modules.GhosttyModule;
 import seb_dot_hajek_at_gmail_dot_com.dots.module.modules.GitModule;
 import seb_dot_hajek_at_gmail_dot_com.dots.module.modules.NvimModule;
 import seb_dot_hajek_at_gmail_dot_com.dots.module.modules.TmuxModule;
 import seb_dot_hajek_at_gmail_dot_com.dots.module.modules.ZSHModule;
+import seb_dot_hajek_at_gmail_dot_com.dots.module.modules.compilers.GoModule;
+import seb_dot_hajek_at_gmail_dot_com.dots.module.modules.compilers.JVMModule;
 import seb_dot_hajek_at_gmail_dot_com.dots.shared.Logger;
 
 public class Main {
@@ -24,7 +27,10 @@ public class Main {
 		  NvimModule.class,
 		  GitModule.class,
 		  ZSHModule.class,
-		  TmuxModule.class
+		  TmuxModule.class,
+		  CompilerModule.class,
+		  GoModule.class,
+		  JVMModule.class
 		);
 		loader.installAll();
 	}

@@ -1,0 +1,3 @@
+# vim: set ft=sh :
+
+source "$HOME/.sdkman/bin/sdkman-init.sh"

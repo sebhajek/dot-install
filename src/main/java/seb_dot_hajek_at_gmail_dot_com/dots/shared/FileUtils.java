@@ -160,4 +160,38 @@ public class FileUtils {
 			}
 		}
 	}
+
+	public static void copyFileIntoDirectory(
+	  Path sourceFile,
+	  Path targetDirectory
+	) throws IOException {
+		Files.createDirectories(targetDirectory);
+
+		Path fileName = sourceFile.getFileName();
+		if (fileName == null) {
+			throw new IllegalArgumentException(
+			  "Source file path must have a filename"
+			);
+		}
+
+		Path targetPath = targetDirectory.resolve(fileName);
+		copyFile(sourceFile, targetPath);
+	}
+
+	public static void copyResourceFileIntoDirectory(
+	  Path resourcePath,
+	  Path targetDirectory
+	) throws IOException, URISyntaxException {
+		Files.createDirectories(targetDirectory);
+
+		Path fileName = resourcePath.getFileName();
+		if (fileName == null) {
+			throw new IllegalArgumentException(
+			  "Resource path must have a filename"
+			);
+		}
+
+		Path targetPath = targetDirectory.resolve(fileName);
+		copyResourceFile(resourcePath, targetPath);
+	}
 }
