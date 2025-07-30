@@ -46,6 +46,6 @@ public class NvimModule extends AbstractSingletonModule {
 
 	@Override
 	public List<Class<? extends AbstractModule>> getDependencyTypes() {
-		return dependencies();
+		return dependencies(ZSHModule.class);
 	}
 }
