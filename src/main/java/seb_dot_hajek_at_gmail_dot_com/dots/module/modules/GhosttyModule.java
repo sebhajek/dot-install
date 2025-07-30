@@ -91,7 +91,7 @@ public class GhosttyModule extends AbstractSingletonModule {
 
 	@Override
 	public List<Class<? extends AbstractModule>> getDependencyTypes() {
-		return dependencies(GitModule.class);
+		return dependencies(ZSHModule.class);
 	}
 
 	private void copyGhosttyConfig() throws IOException, URISyntaxException {

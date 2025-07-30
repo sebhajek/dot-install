@@ -20,8 +20,8 @@ public record CommandExec(Command cmd) {
         exec(ConfigManager.cfg().getConfig().dryRun());
 	}
 
-	private static String readOutputStream(InputStream inputStream)
-	  throws              IOException {
+	public static String readOutputStream(InputStream inputStream)
+	  throws             IOException {
         StringBuilder output = new StringBuilder();
         try (
           BufferedReader reader =
