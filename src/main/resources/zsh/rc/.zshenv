@@ -1,7 +1,6 @@
 # vim: set ft=sh :
 
 PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
-. "$HOME/.sdkman/bin/sdkman-init.sh"
 
 if [ -d "$HOME/.z/env/" ]; then
 	for file in "$HOME/.z/env/"*; do
