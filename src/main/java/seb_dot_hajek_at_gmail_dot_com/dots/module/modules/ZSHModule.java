@@ -146,7 +146,8 @@ public class ZSHModule extends AbstractSingletonModule {
 		var changeShellCommand = Command.builder()
 		                           .sudo()
 		                           .command("chsh")
-		                           .flagWithSpace("s", shellPath)
+		                           .flag("s")
+		                           .arg(shellPath)
 		                           .arg(System.getProperty("user.name"))
 		                           .build();
 		try {
