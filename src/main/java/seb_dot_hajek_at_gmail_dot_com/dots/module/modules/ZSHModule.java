@@ -3,6 +3,7 @@ package seb_dot_hajek_at_gmail_dot_com.dots.module.modules;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import seb_dot_hajek_at_gmail_dot_com.dots.installer.command.Command;
 import seb_dot_hajek_at_gmail_dot_com.dots.installer.command.CommandExec;
@@ -15,6 +16,12 @@ import seb_dot_hajek_at_gmail_dot_com.dots.shared.FileUtils;
 import seb_dot_hajek_at_gmail_dot_com.dots.shared.Logger;
 
 public class ZSHModule extends AbstractSingletonModule {
+
+	public static final Path ZSH_RESOURCES     = Path.of("zsh");
+	public static final Path ZSH_RC_RESOURCES  = ZSH_RESOURCES.resolve("rc");
+	public static final Path ZSH_ENV_RESOURCES = ZSH_RESOURCES.resolve("env");
+	public static final Path PATH_TO_ENV_FILES =
+	  FileUtils.HOME_PATH.resolve(".z").resolve("env");
 
 	@Override
 	public List<RepoPM> getRepos() {
@@ -69,7 +76,7 @@ public class ZSHModule extends AbstractSingletonModule {
 
 	private void CopyZSHConfig() throws IOException, URISyntaxException {
 		Logger.logger().info("copying zsh config");
-		FileUtils.copyResourceToDirectory("zsh", FileUtils.HOME_PATH);
+		FileUtils.copyResourceDirectory(ZSH_RC_RESOURCES, FileUtils.HOME_PATH);
 	}
 
 	private void changeDefaultShell() throws IOException, InterruptedException {

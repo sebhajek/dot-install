@@ -2,6 +2,7 @@ package seb_dot_hajek_at_gmail_dot_com.dots.module.modules;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
@@ -16,6 +17,10 @@ import seb_dot_hajek_at_gmail_dot_com.dots.shared.colors.RGB;
 import seb_dot_hajek_at_gmail_dot_com.dots.shared.colors.Theme;
 
 public class GhosttyModule extends AbstractSingletonModule {
+
+	public static final Path GHOSTTY_RESOURCES = Path.of("ghostty");
+	public static final Path PATH_TO_GHOSTTY_CONFIG_FILES =
+	  FileUtils.CONFIG_PATH.resolve("ghostty");
 
 	public record GhosttyColorSchemeGenerator(Theme theme) {
 
@@ -96,15 +101,15 @@ public class GhosttyModule extends AbstractSingletonModule {
 
 	private void copyGhosttyConfig() throws IOException, URISyntaxException {
 		Logger.logger().info("copying ghostty config");
-		FileUtils.copyResourceToDirectory(
-		  "ghostty", FileUtils.CONFIG_PATH.resolve("ghostty")
+		FileUtils.copyResourceDirectory(
+		  GHOSTTY_RESOURCES, PATH_TO_GHOSTTY_CONFIG_FILES
 		);
 	}
 
 	private void saveColorscheme() throws IOException {
 		Logger.logger().info("generating ghostty colorscheme config");
 
-		FileUtils.writeStringToFile(
+		FileUtils.writeToFile(
 		  FileUtils.CONFIG_PATH.resolve("ghostty")
 		    .resolve("config.d")
 		    .resolve("color"),

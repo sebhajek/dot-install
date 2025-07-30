@@ -11,3 +11,4 @@ build
 .project
 bin/main/seb_dot_hajek_at_gmail_dot_com/dots
 .bloop
+bin/main

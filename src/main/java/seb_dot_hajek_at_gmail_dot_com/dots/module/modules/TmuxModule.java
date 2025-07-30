@@ -2,6 +2,7 @@ package seb_dot_hajek_at_gmail_dot_com.dots.module.modules;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.util.List;
 import seb_dot_hajek_at_gmail_dot_com.dots.installer.config.ConfigManager;
 import seb_dot_hajek_at_gmail_dot_com.dots.installer.distro.distros.FedoraDistro;
@@ -12,6 +13,8 @@ import seb_dot_hajek_at_gmail_dot_com.dots.shared.FileUtils;
 import seb_dot_hajek_at_gmail_dot_com.dots.shared.Logger;
 
 public class TmuxModule extends AbstractSingletonModule {
+
+	static final Path TMUX_RESOURCES = Path.of("tmux");
 
 	@Override
 	public List<RepoPM> getRepos() {
@@ -39,7 +42,7 @@ public class TmuxModule extends AbstractSingletonModule {
 
 	private void copyTmuxConfig() throws IOException, URISyntaxException {
 		Logger.logger().info("copying tmux config");
-		FileUtils.copyResourceToDirectory("tmux", FileUtils.HOME_PATH);
+		FileUtils.copyResourceDirectory(TMUX_RESOURCES, FileUtils.HOME_PATH);
 	}
 
 	@Override

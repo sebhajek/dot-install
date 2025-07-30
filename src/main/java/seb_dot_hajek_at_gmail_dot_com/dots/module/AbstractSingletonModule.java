@@ -1,15 +1,9 @@
 package seb_dot_hajek_at_gmail_dot_com.dots.module;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public abstract class AbstractSingletonModule implements AbstractModule {
-
-	@Override
-	public List<Class<? extends AbstractModule>> getDependencyTypes() {
-		return new ArrayList<>();
-	}
 
 	@SafeVarargs
 	protected final List<Class<? extends AbstractModule>> dependencies(

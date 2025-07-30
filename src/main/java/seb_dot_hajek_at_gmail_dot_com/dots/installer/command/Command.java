@@ -76,9 +76,10 @@ public final class Command {
 
 		public CommandBuilderArgsStage
 		flagWithSpace(final String flag, final String value) {
-			args.add(String.format(
-			  "%s%s %s", flag.length() > 1 ? "--" : "-", flag, value
-			));
+			args.add(
+			  String.format("%s%s", flag.length() > 1 ? "--" : "-", flag)
+			);
+			args.add(value);
 			return this;
 		}
 
