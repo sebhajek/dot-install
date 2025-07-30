@@ -8,6 +8,7 @@ import seb_dot_hajek_at_gmail_dot_com.dots.module.ModuleLoader;
 import seb_dot_hajek_at_gmail_dot_com.dots.module.modules.CompilerModule;
 import seb_dot_hajek_at_gmail_dot_com.dots.module.modules.GhosttyModule;
 import seb_dot_hajek_at_gmail_dot_com.dots.module.modules.GitModule;
+import seb_dot_hajek_at_gmail_dot_com.dots.module.modules.LazygitModule;
 import seb_dot_hajek_at_gmail_dot_com.dots.module.modules.NvimModule;
 import seb_dot_hajek_at_gmail_dot_com.dots.module.modules.TmuxModule;
 import seb_dot_hajek_at_gmail_dot_com.dots.module.modules.ZSHModule;
@@ -30,7 +31,8 @@ public class Main {
 		  TmuxModule.class,
 		  CompilerModule.class,
 		  GoModule.class,
-		  JVMModule.class
+		  JVMModule.class,
+		  LazygitModule.class
 		);
 		loader.installAll();
 	}
