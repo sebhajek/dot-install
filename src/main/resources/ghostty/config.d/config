@@ -1,0 +1,4 @@
+font-family = Fira Code
+font-size = 15
+window-padding-x = 0
+term = xterm-256color
