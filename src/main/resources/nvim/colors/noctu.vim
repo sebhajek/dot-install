@@ -370,6 +370,15 @@ hi! link @danger                    ErrorMsg
 "}}}
 " Programming Languages {{{
 " Java {{{
+hi! link @class.java             Type
+hi! link @record.java            Type
+hi! link @type.identifier.java   Type
+hi! link @constructor.java       Function
+hi! link @method.call.java       Function
+hi! link @field.java             Identifier
+hi! link @annotation.java        PreProc
+hi! link @package.java           Identifier
+hi! link @variable.java          Identifier
 hi! link javaAnnotation    PreProc
 hi! link javaClass         Type
 hi! link javaComment       Comment
