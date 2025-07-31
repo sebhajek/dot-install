@@ -20,6 +20,7 @@ abstract sealed class PackageManagerDNF
 		new CommandExec(Command.builder()
 		                  .sudo()
 		                  .command("dnf", "install")
+		                  .flag("y")
 		                  .arg(packages)
 		                  .build())
 		  .exec();
@@ -32,6 +33,7 @@ abstract sealed class PackageManagerDNF
 		return this.addRepo(repo.repoName(), repo.repoURL(), repo.repoId());
 	}
 
+	@Override
 	public AbstractPackageManager
 	addRepo(final String repoName, final String repoURL, final String repoId)
 	  throws IOException, InterruptedException {
@@ -41,21 +43,47 @@ abstract sealed class PackageManagerDNF
 		);
 
 		try {
-			new CommandExec(Command.builder()
-			                  .command("dnf", "repolist")
-			                  .flag("quiet")
-			                  .arg(repoId)
-			                  .build())
-			  .exec();
+			var process =
+			  new ProcessBuilder("dnf", "repolist", "--enabled").start();
+			var exitCode = process.waitFor();
 
-			Logger.logger().info(
-			  String.format("Repo %s already exists, skipping...", repoId)
+			var output = CommandExec.readOutputStream(process.getInputStream());
+
+			var pattern = java.util.regex.Pattern.compile(
+			  "^(?<repoid>"
+			    + "(?:repo\\ id)"
+			    + "|(?:[\\w\\-\\:\\.]+))"
+			    + "\\s+(?<reponame>[\\S\\ ]+)",
+			  java.util.regex.Pattern.MULTILINE
 			);
-			return this;
-		} catch (final CommandExec.CommandExecutionException e) {
-			Logger.logger().info(
-			  String.format("Repo %s not found, adding...", repoId)
-			);
+			var matcher = pattern.matcher(output);
+
+			boolean repoExists = false;
+			while (matcher.find()) {
+				var foundRepoId = matcher.group("repoid");
+				if (!"repo id".equals(foundRepoId)
+				    && repoId.equals(foundRepoId)) {
+					repoExists = true;
+					break;
+				}
+			}
+
+			if (repoExists) {
+				Logger.logger().info(
+				  String.format("Repo %s already exists, skipping...", repoId)
+				);
+				return this;
+			} else {
+				Logger.logger().info(String.format(
+				  "Repo %s not found in enabled repos, adding...", repoId
+				));
+			}
+		} catch (Exception e) {
+			Logger.logger().info(String.format(
+			  "Error checking repo %s, proceeding to add: %s",
+			  repoId,
+			  e.getMessage()
+			));
 		}
 
 		Logger.logger().info(String.format(
@@ -70,6 +98,7 @@ abstract sealed class PackageManagerDNF
 		                    String.format("%s,%s", repoId, repoURL)
 		                  )
 		                  .arg(repoName)
+		                  .flag("y")
 		                  .build())
 		  .exec();
 		return this;
